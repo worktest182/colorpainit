@@ -1,0 +1,1148 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: #f8f9fa;
+    color: #333;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    display: flex;
+    max-width: 1600px;
+    margin: 0 auto;
+    gap: 30px;
+    height: calc(100vh - 40px);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: #495057;
+}
+
+.header p {
+    color: #6c757d;
+    font-size: 1.1rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Стили для комнаты */
+.room-container {
+    flex: 3;
+    background-color: #ffffff;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    border: 2px solid #e9ecef;
+}
+
+.room-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #495057;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.room {
+    flex: 1;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid #dee2e6;
+}
+
+/* Стиль для главной стены */
+.main-wall {
+    position: absolute;
+    width: 70%;
+    height: 100%;
+    left: 15%;
+    background-color: #ffffff;
+    transition: background-color 0.8s ease, filter 0.8s ease;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Элементы комнаты */
+.tv {
+    position: absolute;
+    top: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 240px;
+    height: 140px;
+    background-color: #222222;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.5s ease;
+    border: 3px solid #343a40;
+    z-index: 5;
+}
+
+.tv-screen {
+    width: 90%;
+    height: 85%;
+    background: linear-gradient(135deg, #000000, #1a1a1a);
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #00ff00;
+    font-size: 2rem;
+    border: 2px solid #495057;
+}
+
+.cabinet {
+    position: absolute;
+    bottom: 10%;
+    left: 10%;
+    width: 200px;
+    height: 220px;
+    background-color: #8B4513;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.5s ease;
+    border: 3px solid #654321;
+    overflow: hidden;
+    z-index: 5;
+}
+
+.cabinet-drawer {
+    position: absolute;
+    width: 80%;
+    height: 20%;
+    background-color: #A0522D;
+    top: 15%;
+    left: 10%;
+    border-radius: 5px;
+    border: 2px solid #8b4513;
+}
+
+.cabinet-knob {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle at 30% 30%, #ffffff, #c0c0c0);
+    border-radius: 50%;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.chest {
+    position: absolute;
+    bottom: 10%;
+    right: 10%;
+    width: 180px;
+    height: 140px;
+    background-color: #654321;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.5s ease;
+    border: 3px solid #543c22;
+    overflow: hidden;
+    z-index: 5;
+}
+
+.chest-drawer {
+    position: absolute;
+    width: 80%;
+    height: 30%;
+    background-color: #7a4f1f;
+    top: 15%;
+    left: 10%;
+    border-radius: 5px;
+    border: 2px solid #654321;
+}
+
+.plant {
+    position: absolute;
+    bottom: 0;
+    left: 40%;
+    width: 80px;
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 6;
+}
+
+.plant-pot {
+    width: 70px;
+    height: 50px;
+    background-color: #a0522d;
+    border-radius: 8px 8px 0 0;
+    transition: background-color 0.5s ease;
+    border: 3px solid #8b4513;
+    z-index: 2;
+}
+
+.plant-stem {
+    width: 12px;
+    height: 100px;
+    background-color: #228B22;
+    transition: background-color 0.5s ease;
+    z-index: 1;
+}
+
+.plant-leaves {
+    position: absolute;
+    top: 20px;
+    width: 80px;
+    height: 80px;
+    background-color: #32CD32;
+    border-radius: 50%;
+    transition: background-color 0.5s ease;
+    z-index: 3;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.shelf {
+    position: absolute;
+    top: 40%;
+    right: 5%;
+    width: 140px;
+    height: 25px;
+    background-color: #D2691E;
+    border-radius: 5px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.5s ease;
+    border: 3px solid #b85c1a;
+    z-index: 5;
+}
+
+.shelf::before {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 100px;
+    background-color: #D2691E;
+    left: 0;
+    top: 25px;
+    transition: background-color 0.5s ease;
+    border-radius: 0 0 3px 3px;
+}
+
+.shelf::after {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 100px;
+    background-color: #D2691E;
+    right: 0;
+    top: 25px;
+    transition: background-color 0.5s ease;
+    border-radius: 0 0 3px 3px;
+}
+
+/* Освещение */
+.lighting {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 140px;
+    height: 70px;
+    background: radial-gradient(ellipse at center, #ffffff 0%, #f8f9fa 70%, #e9ecef 100%);
+    border-radius: 50% 50% 20% 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 40px rgba(255, 255, 200, 0.4);
+    z-index: 10;
+    border: 2px solid #dee2e6;
+}
+
+.light-bulb {
+    width: 50px;
+    height: 50px;
+    background-color: #ffffcc;
+    border-radius: 50%;
+    box-shadow: 0 0 25px #ffff99;
+    transition: background-color 0.8s ease, box-shadow 0.8s ease, opacity 0.8s ease;
+}
+
+/* Панель управления */
+.control-panel {
+    flex: 1;
+    background-color: #ffffff;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    border: 2px solid #e9ecef;
+}
+
+.control-title {
+    font-size: 1.5rem;
+    margin-bottom: 25px;
+    color: #495057;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.control-group {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.group-title {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    color: #495057;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.temperature-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-warm {
+    background: linear-gradient(to bottom, #ff9a00, #e68900);
+    color: #000;
+    flex: 1;
+    border: 2px solid #d67b00;
+}
+
+.btn-warm:hover {
+    background: linear-gradient(to bottom, #ff7b00, #d67b00);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(255, 122, 0, 0.3);
+}
+
+.btn-cold {
+    background: linear-gradient(to bottom, #00b4d8, #0096b4);
+    color: #000;
+    flex: 1;
+    border: 2px solid #0082a1;
+}
+
+.btn-cold:hover {
+    background: linear-gradient(to bottom, #0096b4, #0082a1);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 180, 216, 0.3);
+}
+
+.btn-toggle {
+    background: linear-gradient(to bottom, #6c757d, #495057);
+    color: #ffffff;
+    flex: 1;
+    border: 2px solid #343a40;
+}
+
+.btn-toggle:hover {
+    background: linear-gradient(to bottom, #495057, #343a40);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+}
+
+.btn-toggle.on {
+    background: linear-gradient(to bottom, #28a745, #218838);
+    border: 2px solid #1e7e34;
+}
+
+.btn-toggle.on:hover {
+    background: linear-gradient(to bottom, #218838, #1e7e34);
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #495057;
+    font-weight: 500;
+}
+
+.input-group input[type="range"] {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: #e9ecef;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.input-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #007bff;
+    cursor: pointer;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.input-group input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #007bff;
+    cursor: pointer;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.range-value {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #6c757d;
+    text-align: center;
+}
+
+.input-group input[type="text"] {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 2px solid #ced4da;
+    background-color: #ffffff;
+    color: #495057;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.input-group input[type="text"]:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.catalog-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.catalog-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.catalog-btn {
+    padding: 10px 15px;
+    background-color: #e9ecef;
+    color: #495057;
+    border: 2px solid #ced4da;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 120px;
+    font-weight: 500;
+}
+
+.catalog-btn:hover {
+    background-color: #dee2e6;
+    border-color: #adb5bd;
+}
+
+.catalog-btn.active {
+    background-color: #007bff;
+    color: #ffffff;
+    font-weight: 600;
+    border-color: #0056b3;
+}
+
+.color-input-group {
+    display: flex;
+    gap: 10px;
+}
+
+.color-input-group input {
+    flex: 1;
+}
+
+.btn-apply {
+    background: linear-gradient(to bottom, #28a745, #218838);
+    color: #ffffff;
+    font-weight: 600;
+    padding: 12px 20px;
+    border: 2px solid #1e7e34;
+    min-width: 100px;
+}
+
+.btn-apply:hover {
+    background: linear-gradient(to bottom, #218838, #1e7e34);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+}
+
+.furniture-controls {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.furniture-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.furniture-item label {
+    font-size: 0.9rem;
+    color: #495057;
+    font-weight: 500;
+}
+
+.color-picker {
+    width: 100%;
+    height: 40px;
+    border-radius: 6px;
+    border: 2px solid #ced4da;
+    cursor: pointer;
+    background-color: #ffffff;
+    transition: border-color 0.3s;
+}
+
+.color-picker:hover {
+    border-color: #adb5bd;
+}
+
+.color-hex {
+    font-size: 0.8rem;
+    color: #6c757d;
+    text-align: center;
+    font-family: monospace;
+    background: #f8f9fa;
+    padding: 3px 5px;
+    border-radius: 3px;
+    border: 1px solid #e9ecef;
+}
+
+.btn-reset {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(to bottom, #dc3545, #c82333);
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-top: 10px;
+    border: 2px solid #bd2130;
+}
+
+.btn-reset:hover {
+    background: linear-gradient(to bottom, #c82333, #bd2130);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+}
+
+.status {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: #495057;
+    border-left: 4px solid #007bff;
+}
+
+/* Стиль для названия цвета */
+.color-name {
+    padding: 12px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    margin-top: 10px;
+    font-size: 0.95rem;
+    border-left: 3px solid #28a745;
+    border: 1px solid #e9ecef;
+}
+
+.color-name-ru {
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 3px;
+}
+
+.color-name-en {
+    font-style: italic;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+/* Индикатор состояния света */
+.light-status {
+    padding: 8px 12px;
+    background-color: #e9ecef;
+    border-radius: 6px;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    text-align: center;
+    border: 1px solid #ced4da;
+}
+
+.light-status.on {
+    background-color: rgba(40, 167, 69, 0.1);
+    border-color: #28a745;
+    color: #155724;
+}
+
+.light-status.off {
+    background-color: rgba(108, 117, 125, 0.1);
+    border-color: #6c757d;
+    color: #343a40;
+}
+
+/* Стили для новой секции подбора цветов */
+.mode-selector {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.mode-selector label {
+    display: block;
+    margin-bottom: 8px;
+    color: #495057;
+    font-weight: 500;
+}
+
+.mode-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.mode-btn {
+    padding: 8px 12px;
+    background-color: #e9ecef;
+    color: #495057;
+    border: 2px solid #ced4da;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 100px;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.mode-btn:hover {
+    background-color: #dee2e6;
+    border-color: #adb5bd;
+}
+
+.mode-btn.active {
+    background-color: #6f42c1;
+    color: #ffffff;
+    font-weight: 600;
+    border-color: #5a32a3;
+}
+
+.color-results {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.results-title {
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #495057;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.colors-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.color-item {
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border: 2px solid transparent;
+}
+
+.color-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    border-color: #007bff;
+}
+
+.color-preview {
+    height: 60px;
+    width: 100%;
+}
+
+.color-info {
+    padding: 8px;
+    background-color: white;
+    text-align: center;
+}
+
+.color-code {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #495057;
+    margin-bottom: 2px;
+}
+
+.color-catalog {
+    font-size: 0.75rem;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.btn-pick {
+    background: linear-gradient(to bottom, #6f42c1, #5a32a3);
+    color: #ffffff;
+    font-weight: 600;
+    padding: 12px 20px;
+    border: 2px solid #4a2a8a;
+    min-width: 100px;
+}
+
+.btn-pick:hover {
+    background: linear-gradient(to bottom, #5a32a3, #4a2a8a);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(111, 66, 193, 0.3);
+}
+
+.catalog-btn-picker {
+    padding: 8px 10px;
+    background-color: #e9ecef;
+    color: #495057;
+    border: 2px solid #ced4da;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 80px;
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+.catalog-btn-picker:hover {
+    background-color: #dee2e6;
+    border-color: #adb5bd;
+}
+
+.catalog-btn-picker.active {
+    background-color: #6f42c1;
+    color: #ffffff;
+    font-weight: 600;
+    border-color: #5a32a3;
+}
+
+/* ============================================ */
+/* Стили для управления комнатой */
+/* ============================================ */
+.room-management-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.btn-room {
+    flex: 1;
+    min-width: 120px;
+    background: linear-gradient(to bottom, #4a5568, #2d3748);
+    color: white;
+    padding: 12px 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-room:hover {
+    background: linear-gradient(to bottom, #2d3748, #1a202c);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-icon {
+    font-size: 16px;
+}
+
+.btn-text {
+    font-size: 14px;
+}
+
+/* ============================================ */
+/* Стили для сплит-стены */
+/* ============================================ */
+.split-wall-controls {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+    margin-top: 10px;
+}
+
+.split-mode-selector {
+    margin-bottom: 20px;
+}
+
+.split-mode-selector label {
+    display: block;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: #495057;
+    font-size: 15px;
+}
+
+.split-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.split-btn {
+    padding: 12px 8px;
+    border: 2px solid #ced4da;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.split-btn:hover {
+    border-color: #adb5bd;
+    background: #f8f9fa;
+    transform: translateY(-2px);
+}
+
+.split-btn.active {
+    border-color: #007bff;
+    background: #007bff;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.active-section-selector {
+    margin-bottom: 20px;
+}
+
+.active-section-selector label {
+    display: block;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: #495057;
+    font-size: 15px;
+}
+
+.section-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.section-btn {
+    padding: 12px 8px;
+    border: 2px solid #ced4da;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.section-btn:hover {
+    border-color: #adb5bd;
+    background: #f8f9fa;
+    transform: translateY(-2px);
+}
+
+.section-btn.active {
+    border-color: #28a745;
+    background: #28a745;
+    color: white;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.section-info {
+    padding: 15px;
+    background: #e9ecef;
+    border-radius: 8px;
+    border-left: 4px solid #007bff;
+    font-size: 14px;
+    margin-top: 15px;
+}
+
+.section-info p {
+    margin: 8px 0;
+    color: #495057;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#currentSection {
+    color: #007bff;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.info-icon {
+    font-size: 16px;
+}
+
+/* ============================================ */
+/* Стили для секций стены в комнате */
+/* ============================================ */
+.wall-section {
+     position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    background-color: #ffffff; /* УБЕРИТЕ !important */
+    z-index: 1;
+    box-sizing: border-box;
+    transition: background-color 0.8s ease, filter 0.8s ease;
+}
+
+.wall-section.active {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Поднимаем мебель над секциями */
+.tv, .cabinet, .chest, .plant, .shelf, .lighting {
+    z-index: 10 !important;
+}
+
+/* ============================================ */
+/* Стили для скрытой мебели */
+/* ============================================ */
+.furniture-hidden .tv,
+.furniture-hidden .cabinet,
+.furniture-hidden .chest,
+.furniture-hidden .shelf,
+.furniture-hidden .plant {
+    opacity: 0.3 !important;
+    filter: blur(1px);
+    transition: opacity 0.5s ease, filter 0.5s ease;
+}
+
+/* ============================================ */
+/* Стили для режима "Только стены" */
+/* ============================================ */
+.walls-only-mode .tv,
+.walls-only-mode .cabinet,
+.walls-only-mode .chest,
+.walls-only-mode .shelf,
+.walls-only-mode .plant {
+    display: none !important;
+}
+
+/* Адаптивность */
+@media (max-width: 1200px) {
+    .container {
+        flex-direction: column;
+        height: auto;
+    }
+    
+    .room-container, .control-panel {
+        width: 100%;
+    }
+    
+    .room {
+        height: 500px;
+    }
+    
+    .colors-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .furniture-controls {
+        grid-template-columns: 1fr;
+    }
+    
+    .catalog-buttons {
+        flex-direction: column;
+    }
+    
+    .catalog-btn {
+        min-width: 100%;
+    }
+    
+    .catalog-btn-picker {
+        min-width: 100%;
+    }
+    
+    .temperature-buttons {
+        flex-direction: column;
+    }
+    
+    .mode-buttons {
+        flex-direction: column;
+    }
+    
+    .mode-btn {
+        min-width: 100%;
+    }
+    
+    .header h1 {
+        font-size: 2rem;
+    }
+    
+    .header p {
+        font-size: 0.9rem;
+    }
+    
+    .color-input-group {
+        flex-direction: column;
+    }
+    
+    .room-title, .control-title {
+        font-size: 1.2rem;
+    }
+    
+    .group-title {
+        font-size: 1.1rem;
+    }
+    
+    .colors-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+    
+    .color-preview {
+        height: 50px;
+    }
+    
+    .room-management-buttons {
+        flex-direction: column;
+    }
+    
+    .btn-room {
+        min-width: 100%;
+        padding: 15px;
+    }
+    
+    .split-buttons,
+    .section-buttons {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .split-btn,
+    .section-btn {
+        padding: 15px 5px;
+        font-size: 13px;
+    }
+    
+    .section-info {
+        padding: 12px;
+        font-size: 13px;
+    }
+@media (max-width: 992px) {
+    .split-buttons,
+    .section-buttons {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .room-management-buttons {
+        flex-direction: column;
+    }
+    
+    .btn-room {
+        min-width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .split-wall-controls {
+        padding: 15px;
+    }
+    
+    .split-buttons,
+    .section-buttons {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .split-btn,
+    .section-btn {
+        padding: 10px 5px;
+        font-size: 13px;
+    }
+    
+    .section-info {
+        padding: 10px;
+        font-size: 12px;
+    }
+    
+    .control-panel {
+        padding: 15px;
+    }
+    
+    .control-group {
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+    }
+}
+}
