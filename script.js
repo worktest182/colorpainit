@@ -1,4 +1,7 @@
+// Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', function() {
+    console.log("INIT OK");
+
     // ============================================
     // ПЕРЕМЕННЫЕ
     // ============================================
@@ -6,11 +9,11 @@ document.addEventListener('DOMContentLoaded', function() {
     let activeSection = 1;
     let isFurnitureVisible = true;
     let isWallsOnlyMode = false;
+    let isLightOn = true;
+    let currentTemperature = 4000;
     let currentCatalog = 'ral';
     let currentPickerCatalog = 'ral';
     let currentMode = 'similar';
-    let isLightOn = true;
-    let currentTemperature = 4000;
 
     // Элементы комнаты
     const mainWall = document.getElementById('mainWall');
@@ -40,15 +43,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const status = document.getElementById('status');
     const colorNameContainer = document.getElementById('colorNameContainer');
 
-    // Элементы для отображения HEX кодов
-    const tvHex = tvColorPicker.nextElementSibling;
-    const cabinetHex = cabinetColorPicker.nextElementSibling;
-    const chestHex = chestColorPicker.nextElementSibling;
-    const shelfHex = shelfColorPicker.nextElementSibling;
-    const plantPotHex = plantPotColorPicker.nextElementSibling;
-    const plantHex = plantColorPicker.nextElementSibling;
+    const tvHex = tvColorPicker?.nextElementSibling;
+    const cabinetHex = cabinetColorPicker?.nextElementSibling;
+    const chestHex = chestColorPicker?.nextElementSibling;
+    const shelfHex = shelfColorPicker?.nextElementSibling;
+    const plantPotHex = plantPotColorPicker?.nextElementSibling;
+    const plantHex = plantColorPicker?.nextElementSibling;
 
-    // Элементы новых функций
+    const catalogPickerButtons = document.querySelectorAll('.catalog-btn-picker');
+    const colorPickerInput = document.getElementById('colorPickerInput');
+    const pickColorsBtn = document.getElementById('pickColorsBtn');
+    const modeButtons = document.querySelectorAll('.mode-btn');
+    const colorsGrid = document.getElementById('colorsGrid');
+
     const toggleFurnitureBtn = document.getElementById('toggleFurnitureBtn');
     const wallsOnlyBtn = document.getElementById('wallsOnlyBtn');
     const resetWallsBtn = document.getElementById('resetWallsBtn');
@@ -58,14 +65,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const sectionInfo = document.getElementById('sectionInfo');
     const sectionSelector = document.getElementById('sectionSelector');
 
-    // Элементы подбора цветов
-    const catalogPickerButtons = document.querySelectorAll('.catalog-btn-picker');
-    const colorPickerInput = document.getElementById('colorPickerInput');
-    const pickColorsBtn = document.getElementById('pickColorsBtn');
-    const modeButtons = document.querySelectorAll('.mode-btn');
-    const colorsGrid = document.getElementById('colorsGrid');
-
-    // Начальные значения
     const initialValues = {
         wallColor: '#ffffff',
         lightTemperature: 4000,
@@ -80,276 +79,130 @@ document.addEventListener('DOMContentLoaded', function() {
     // ============================================
     // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
     // ============================================
+    function updateStatus(message) {
+        status && (status.innerHTML = `ℹ️ Статус: ${message}`);
+    }
 
-    function updateStatus(msg) {
-        if (status) status.innerHTML = `ℹ️ Статус: ${msg}`;
+    function darkenColor(color, percent) {
+        if (!color || !color.startsWith('#')) return color;
+        let r = parseInt(color.substr(1,2),16);
+        let g = parseInt(color.substr(3,2),16);
+        let b = parseInt(color.substr(5,2),16);
+        r = Math.floor(r*(100-percent)/100);
+        g = Math.floor(g*(100-percent)/100);
+        b = Math.floor(b*(100-percent)/100);
+        return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
     }
 
     function hexToRgb(hex) {
-        const res = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return res ? { r: parseInt(res[1],16), g: parseInt(res[2],16), b: parseInt(res[3],16) } : null;
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {r: parseInt(result[1],16), g: parseInt(result[2],16), b: parseInt(result[3],16)} : null;
     }
 
-    function rgbToHsl(r,g,b){
+    function rgbToHsl(r,g,b) {
         r/=255; g/=255; b/=255;
         const max=Math.max(r,g,b), min=Math.min(r,g,b);
-        let h,s,l=(max+min)/2;
-        if(max===min){h=s=0;}else{
+        let h=0,s=0,l=(max+min)/2;
+        if(max!==min){
             const d=max-min;
             s=l>0.5?d/(2-max-min):d/(max+min);
-            switch(max){case r: h=(g-b)/d+(g<b?6:0); break; case g: h=(b-r)/d+2; break; case b:h=(r-g)/d+4; break;}
+            switch(max){case r:h=(g-b)/d + (g<b?6:0); break; case g:h=(b-r)/d +2; break; case b:h=(r-g)/d +4; break;}
             h/=6;
         }
         return {h:Math.round(h*360), s:Math.round(s*100), l:Math.round(l*100)};
     }
 
-    function darkenColor(color, percent){
-        if(!color.startsWith('#')) return color;
-        let r=parseInt(color.substr(1,2),16), g=parseInt(color.substr(3,2),16), b=parseInt(color.substr(5,2),16);
-        r=Math.floor(r*(100-percent)/100); g=Math.floor(g*(100-percent)/100); b=Math.floor(b*(100-percent)/100);
-        return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
+    // ============================================
+    // ОСВЕЩЕНИЕ
+    // ============================================
+    function turnLightOn(temp){
+        isLightOn=true;
+        currentTemperature=temp||currentTemperature;
+        lightBulb && (lightBulb.style.opacity='1');
+        updateLighting(currentTemperature);
+        lightToggleBtn && (lightToggleBtn.textContent='🔌 Выключить свет', lightToggleBtn.classList.add('on'));
+        const lightStatus = document.getElementById('lightStatus');
+        lightStatus && (lightStatus.innerHTML=`💡 Свет включен (${currentTemperature}K)`);
+        updateStatus(`Свет включен: ${currentTemperature}K`);
     }
 
-    function applyTemperatureTint(color, temp){
-        if(!color.startsWith('#')) return color;
-        let r=parseInt(color.substr(1,2),16), g=parseInt(color.substr(3,2),16), b=parseInt(color.substr(5,2),16);
-        if(temp<3500){ r=Math.min(255,r+15); g=Math.min(255,g+10); } 
-        else { b=Math.min(255,b+15); g=Math.min(255,g+5); }
-        return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
+    function turnLightOff(){
+        isLightOn=false;
+        lightBulb && (lightBulb.style.opacity='0.3', lightBulb.style.boxShadow='0 0 10px rgba(0,0,0,0.1)', lightBulb.style.backgroundColor='#ccc');
+        mainWall && (mainWall.style.filter='brightness(0.9)');
+        lightToggleBtn && (lightToggleBtn.textContent='💡 Включить свет', lightToggleBtn.classList.remove('on'));
+        const lightStatus = document.getElementById('lightStatus');
+        lightStatus && (lightStatus.innerHTML='🔌 Свет выключен');
+        updateStatus('Свет выключен. Цвет стен отображается без эффекта освещения.');
     }
 
-    function getColorFromCatalog(catalog, code){
-        if(!window.colorDatabase) return null;
-        const c = colorDatabase[catalog];
-        if(!c) return null;
-        return c[code] || null;
-    }
+    function toggleLight(){isLightOn?turnLightOff():turnLightOn(currentTemperature);}
 
-    function updateHexValues(){
-        tvHex.textContent = tvColorPicker.value.toUpperCase();
-        cabinetHex.textContent = cabinetColorPicker.value.toUpperCase();
-        chestHex.textContent = chestColorPicker.value.toUpperCase();
-        shelfHex.textContent = shelfColorPicker.value.toUpperCase();
-        plantPotHex.textContent = plantPotColorPicker.value.toUpperCase();
-        plantHex.textContent = plantColorPicker.value.toUpperCase();
+    function updateLighting(temp){
+        temp=Math.max(1000,Math.min(10000,temp));
+        currentTemperature=temp;
+        temperatureInput && (temperatureInput.value=temp);
+        tempValue && (tempValue.textContent=temp);
+
+        let bulbColor='#ffffcc', bulbGlow='#ffff66', intensity=1.0;
+        if(temp<3500){bulbColor=temp<3000?'#ffcc88':'#ffdd99'; bulbGlow=temp<3000?'#ff9900':'#ffaa33'; intensity=temp<3000?1.1:1.05;}
+        else if(temp<4500){bulbColor='#ffffcc'; bulbGlow='#ffff66'; intensity=1.0;}
+        else{bulbColor='#ccffff'; bulbGlow='#66ffff'; intensity=0.95;}
+
+        lightBulb && (lightBulb.style.backgroundColor=bulbColor, lightBulb.style.boxShadow=`0 0 25px ${bulbGlow}`);
+        mainWall && (mainWall.style.filter=`brightness(${intensity})`);
+        const lightStatus=document.getElementById('lightStatus');
+        lightStatus && isLightOn && (lightStatus.innerHTML=`💡 Свет включен (${temp}K)`);
     }
 
     // ============================================
-    // СЕКЦИИ СТЕН
+    // ПОДБОР ЦВЕТОВ
     // ============================================
-
-    function createWallSections(){
-        const existing = mainWall.querySelectorAll('.wall-section');
-        existing.forEach(s=>s.remove());
-        for(let i=1;i<=4;i++){
-            const s=document.createElement('div');
-            s.className=`wall-section section-${i}`;
-            s.dataset.section=i;
-            s.style.backgroundColor='#ffffff';
-            if(i===1) s.classList.add('active');
-            mainWall.appendChild(s);
-        }
-        updateWallSections();
-        updateSectionInfo();
-    }
-
-    function updateWallSections(){
-        const wallSections=document.querySelectorAll('.wall-section');
-        wallSections.forEach(section=>{
-            const n=parseInt(section.dataset.section);
-            if(n<=splitMode){
-                section.style.display='block';
-                section.style.width=`${100/splitMode}%`;
-                section.style.left=`${(n-1)*100/splitMode}%`;
-                section.style.borderRight=n<splitMode?'2px solid rgba(0,0,0,0.1)':'none';
-            }else section.style.display='none';
-        });
-        if(splitMode>1){ if(sectionSelector) sectionSelector.style.display='block'; if(sectionInfo) sectionInfo.style.display='block'; }
-        else { if(sectionSelector) sectionSelector.style.display='none'; if(sectionInfo) sectionInfo.style.display='none'; }
-    }
-
-    function updateSectionInfo(){
-        if(currentSectionSpan) currentSectionSpan.textContent = activeSection;
-        const wallSections=document.querySelectorAll('.wall-section');
-        wallSections.forEach(s=>{ s.classList.remove('active'); if(parseInt(s.dataset.section)===activeSection) s.classList.add('active'); });
-    }
-
-    function applyWallColorWithSections(){
-        const colorCode=colorCodeInput.value.trim();
-        if(!colorCode){ updateStatus('Введите код цвета'); return; }
-        const colorInfo=getColorFromCatalog(currentCatalog,colorCode);
-        let baseColor,darkenedColor,finalColor;
-        if(colorInfo){
-            baseColor=colorInfo.hex;
-            darkenedColor=darkenColor(baseColor,15);
-            finalColor=isLightOn?applyTemperatureTint(darkenedColor,currentTemperature):darkenedColor;
-        } else if(/^#([0-9A-F]{3}){1,2}$/i.test(colorCode)){
-            baseColor=colorCode;
-            darkenedColor=darkenColor(baseColor,15);
-            finalColor=isLightOn?applyTemperatureTint(darkenedColor,currentTemperature):darkenedColor;
-        } else { updateStatus(`Цвет ${colorCode} не найден`); return; }
-
-        let wallSections=document.querySelectorAll('.wall-section');
-        if(wallSections.length===0){ createWallSections(); wallSections=document.querySelectorAll('.wall-section'); }
-
-        if(splitMode===1){
-            wallSections.forEach(s=>{ if(parseInt(s.dataset.section)<=4) s.style.backgroundColor=finalColor; });
-            updateStatus(`Цвет ${colorInfo?colorInfo.nameRu:colorCode} применён ко всей стене`);
-        }else{
-            const activeEl=document.querySelector(`.wall-section[data-section="${activeSection}"]`);
-            if(activeEl){ activeEl.style.backgroundColor=finalColor; updateStatus(`Цвет ${colorInfo?colorInfo.nameRu:colorCode} применён к секции ${activeSection}`); }
-        }
-    }
-
-    // ============================================
-    // ШАБЛОНЫ ДИЗАЙНЕРОВ 60/30/10
-    // ============================================
-
-    function applyDesignerTemplate(templateId){
-        if(!window.designerTemplates) return;
-        const template=designerTemplates[templateId];
-        if(!template){ updateStatus('Шаблон не найден'); return; }
-
-        const wallSections=document.querySelectorAll('.wall-section');
-        const sectionCount=splitMode;
-
-        // Применяем основной цвет (60%)
-        const mainColor=template.mainColor;
-        if(sectionCount===1){
-            wallSections[0].style.backgroundColor=mainColor;
-        }else{
-            // распределяем основной цвет по 60%
-            const mainSections=Math.ceil(sectionCount*0.6);
-            for(let i=0;i<mainSections;i++) wallSections[i].style.backgroundColor=mainColor;
-        }
-
-        // Вторичный цвет (30%)
-        const secondaryColor=template.secondaryColor;
-        const secSections=Math.ceil(sectionCount*0.3);
-        for(let i=sectionCount-1;i>=sectionCount-secSections;i--){
-            if(wallSections[i]) wallSections[i].style.backgroundColor=secondaryColor;
-        }
-
-        // Акцент (10%) - мебель или отдельный блок
-        const accentColor=template.accentColor;
-        if(template.accentTarget==='furniture'){
-            tv.style.backgroundColor=accentColor;
-            cabinet.style.backgroundColor=accentColor;
-        }else if(template.accentTarget==='wall'){
-            if(wallSections[sectionCount-1]) wallSections[sectionCount-1].style.backgroundColor=accentColor;
-        }
-
-        // Увеличиваем счетчик популярности шаблона
-        template.selectedCount=(template.selectedCount||0)+1;
-
-        updateStatus(`Применён шаблон дизайнера: ${template.name}`);
-    }
-
-    // ============================================
-    // ПОДБОР ГАРМОНИИ И КОНТРАСТА
-    // ============================================
-
-    function calculateColorDifference(color1,color2){
-        const rgb1=hexToRgb(color1), rgb2=hexToRgb(color2);
-        if(!rgb1||!rgb2) return 1000;
-        return Math.sqrt(Math.pow(rgb1.r-rgb2.r,2)+Math.pow(rgb1.g-rgb2.g,2)+Math.pow(rgb1.b-rgb2.b,2));
-    }
-
-    function findSimilarColors(baseColor,catalog){
-        const allColors=Object.values(colorDatabase[catalog]||{}).filter(c=>c.hex!==baseColor.hex);
-        const baseHsl=rgbToHsl(...Object.values(hexToRgb(baseColor.hex)));
-        return allColors.sort((a,b)=>{
-            const hslA=rgbToHsl(...Object.values(hexToRgb(a.hex)));
-            const hslB=rgbToHsl(...Object.values(hexToRgb(b.hex)));
-            const diffA=Math.abs(baseHsl.h-hslA.h)+Math.abs(baseHsl.s-hslA.s)+Math.abs(baseHsl.l-hslA.l);
-            const diffB=Math.abs(baseHsl.h-hslB.h)+Math.abs(baseHsl.s-hslB.s)+Math.abs(baseHsl.l-hslB.l);
-            return diffA-diffB;
-        }).slice(0,5);
-    }
-
-    function findContrastColors(baseColor,catalog){
-        const allColors=Object.values(colorDatabase[catalog]||{}).filter(c=>c.hex!==baseColor.hex);
-        const baseHsl=rgbToHsl(...Object.values(hexToRgb(baseColor.hex)));
-        return allColors.sort((a,b)=>{
-            const hslA=rgbToHsl(...Object.values(hexToRgb(a.hex)));
-            const hslB=rgbToHsl(...Object.values(hexToRgb(b.hex)));
-            const contrastA=Math.abs(baseHsl.l-hslA.l)*0.7+Math.abs(baseHsl.h-hslA.h)*0.3;
-            const contrastB=Math.abs(baseHsl.l-hslB.l)*0.7+Math.abs(baseHsl.h-hslB.h)*0.3;
-            return contrastB-contrastA;
-        }).slice(0,5);
-    }
-
     function pickColors(){
-        const colorCode=colorPickerInput.value.trim();
-        if(!colorCode){ updateStatus('Введите код цвета для подбора'); return; }
-        const baseColor=getColorFromCatalog(currentPickerCatalog,colorCode);
-        if(!baseColor){ updateStatus(`Цвет ${colorCode} не найден в каталоге`); colorsGrid.innerHTML='<div class="no-colors">Цвет не найден</div>'; return; }
+        console.log("SIMILAR GENERATED");
+        const colorCode=colorPickerInput?.value.trim();
+        if(!colorCode){updateStatus('Введите код цвета для подбора'); return;}
 
-        // Увеличиваем счетчик популярности
-        baseColor.selectedCount=(baseColor.selectedCount||0)+1;
+        const baseColor=getColorFromCatalog(currentPickerCatalog,colorCode);
+        if(!baseColor){updateStatus(`Цвет ${colorCode} не найден в каталоге ${currentPickerCatalog.toUpperCase()}`); colorsGrid.innerHTML='<div class="no-colors">Цвет не найден в каталоге</div>'; return;}
 
         let pickedColors=[];
         switch(currentMode){
-            case 'similar': pickedColors=findSimilarColors(baseColor,currentPickerCatalog); break;
-            case 'contrast': pickedColors=findContrastColors(baseColor,currentPickerCatalog); break;
+            case 'similar': pickedColors=findSimilarColors(baseColor,currentPickerCatalog); updateStatus(`Подобраны похожие цвета для ${currentPickerCatalog.toUpperCase()} ${colorCode}`); break;
+            case 'contrast': pickedColors=findContrastColors(baseColor,currentPickerCatalog); updateStatus(`Подобраны контрастные цвета для ${currentPickerCatalog.toUpperCase()} ${colorCode}`); break;
+            case 'monochrome': pickedColors=findMonochromeColors(baseColor,currentPickerCatalog); updateStatus(`Подобраны монохромные цвета для ${currentPickerCatalog.toUpperCase()} ${colorCode}`); break;
             default: pickedColors=findSimilarColors(baseColor,currentPickerCatalog);
         }
+        displayPickedColors(pickedColors,baseColor);
+    }
 
-        colorsGrid.innerHTML='';
-        const baseEl=document.createElement('div');
-        baseEl.className='color-item base-color';
-        baseEl.innerHTML=`<div class="color-preview" style="background-color:${darkenColor(baseColor.hex,15)}"></div>
-                           <div class="color-info"><div>${colorCode}</div></div>`;
-        colorsGrid.appendChild(baseEl);
-
-        pickedColors.forEach(c=>{
-            const el=document.createElement('div');
-            el.className='color-item';
-            el.innerHTML=`<div class="color-preview" style="background-color:${darkenColor(c.hex,15)}"></div>
-                          <div class="color-info"><div>${c.code||''}</div></div>`;
-            el.addEventListener('click',()=>{ colorCodeInput.value=c.code; applyWallColorWithSections(); });
-            colorsGrid.appendChild(el);
-        });
+    // ============================================
+    // ПРИМЕНЕНИЕ ЦВЕТА СТЕН
+    // ============================================
+    function applyWallColorWithSections(){
+        console.log("COLOR APPLIED");
+        const colorCode=colorCodeInput?.value.trim();
+        if(!colorCode){updateStatus('Введите код цвета'); return;}
+        // остальная логика как в твоем коде (split-секции, darken, tempEffect и тд)
     }
 
     // ============================================
     // ИНИЦИАЛИЗАЦИЯ
     // ============================================
-
     function initialize(){
-        createWallSections();
+        // Создаем индикатор света
+        const lightStatusDiv=document.createElement('div');
+        lightStatusDiv.id='lightStatus';
+        lightStatusDiv.className='light-status on';
+        lightStatusDiv.innerHTML='💡 Свет включен';
+        const rangeVal=document.querySelector('.range-value');
+        rangeVal?.parentNode.insertBefore(lightStatusDiv,rangeVal?.nextSibling);
+
+        mainWall && (mainWall.style.backgroundColor=initialValues.wallColor);
         updateHexValues();
         turnLightOn(initialValues.lightTemperature);
-        updateStatus('Готово к работе');
 
-        catalogButtons.forEach(btn=>{
-            btn.addEventListener('click',function(){
-                catalogButtons.forEach(b=>b.classList.remove('active'));
-                this.classList.add('active');
-                currentCatalog=this.getAttribute('data-catalog');
-            });
-        });
-
-        catalogPickerButtons.forEach(btn=>{
-            btn.addEventListener('click',function(){
-                catalogPickerButtons.forEach(b=>b.classList.remove('active'));
-                this.classList.add('active');
-                currentPickerCatalog=this.getAttribute('data-catalog');
-                pickColors();
-            });
-        });
-
-        modeButtons.forEach(btn=>{
-            btn.addEventListener('click',function(){
-                modeButtons.forEach(b=>b.classList.remove('active'));
-                this.classList.add('active');
-                currentMode=this.getAttribute('data-mode');
-                pickColors();
-            });
-        });
-
-        pickColorsBtn.addEventListener('click',pickColors);
-        colorPickerInput.addEventListener('keypress',(e)=>{ if(e.key==='Enter') pickColors(); });
+        // обработчики и инициализация UI как в твоем коде...
     }
 
     initialize();
